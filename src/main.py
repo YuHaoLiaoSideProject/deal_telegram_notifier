@@ -34,13 +34,21 @@ def main():
             missing.append(f"  • {key}  —  {hint}")
 
     if missing:
-        logger.error(
+        msg = (
             "╔══════════════════════════════════════════════════╗\n"
-            "║   ❌ 缺少必要的 Secrets，無法執行通知           ║\n"
+            "║   ❌ 缺少必要的 Secrets                         ║\n"
             "╚══════════════════════════════════════════════════╝\n"
-            "請至 GitHub Repo → Settings → Secrets and variables → Actions 新增：\n"
+            "\n"
             + "\n".join(missing) + "\n"
+            "\n"
+            "⚠️  Organization secrets 預設不會自動開放給所有 Repo。\n"
+            "請至 Repo 層級設定（推薦）：\n"
+            "  Repo → Settings → Secrets and variables → Actions → New secret\n"
+            "\n"
+            "若已在 Organization 層級新增，請檢查該 secret 的「Repository access」\n"
+            "是否有勾選這個 Repo。\n"
         )
+        logger.error(msg)
         sys.exit(1)
 
     bot_token = os.environ["TELEGRAM_BOT_TOKEN"]
