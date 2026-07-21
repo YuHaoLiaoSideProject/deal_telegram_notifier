@@ -17,20 +17,28 @@ logging.basicConfig(
 logger = logging.getLogger("main")
 
 
-# ── GitHub Actions Secrets 檢查 ────────────────────────────────
+# ── 必要設定檢查 ──────────────────────────────────────────────
 
-REQUIRED_SECRETS = {
-    "TELEGRAM_BOT_TOKEN": "Telegram Bot Token（從 @BotFather 取得）",
-    "TELEGRAM_CHAT_ID": "接收通知的聊天/群組 ID（數字，含負號）",
-    "TELEGRAM_THREAD_ID": "話題 ID（Forum Topic 的 message_thread_id）",
+REQUIRED_ENV = {
+    "TELEGRAM_BOT_TOKEN": (
+        "Secret — Telegram Bot Token（從 @BotFather 取得）"
+    ),
+    "TELEGRAM_CHAT_ID": (
+        "Secret — 接收通知的聊天/群組 ID"
+    ),
+}
+
+OPTIONAL_ENV = {
+    # Variable — 好康通知話題 thread_id（Repo → Settings → Variables → Actions）
+    "TELEGRAM_THREAD_ID_DEAL": "好康通知",
 }
 
 
 def main():
+    # ── 檢查必要設定 ─────────────────────────────────────
     missing = []
-    for key, hint in REQUIRED_SECRETS.items():
-        val = os.environ.get(key)
-        if not val:
+    for key, hint in REQUIRED_ENV.items():
+        if not os.environ.get(key):
             missing.append(f"  • {key}  —  {hint}")
 
     if missing:
@@ -41,24 +49,28 @@ def main():
             "\n"
             + "\n".join(missing) + "\n"
             "\n"
-            "⚠️  Organization secrets 預設不會自動開放給所有 Repo。\n"
-            "請至 Repo 層級設定（推薦）：\n"
-            "  Repo → Settings → Secrets and variables → Actions → New secret\n"
-            "\n"
-            "若已在 Organization 層級新增，請檢查該 secret 的「Repository access」\n"
-            "是否有勾選這個 Repo。\n"
+            "請至 Repo → Settings → Secrets and variables → Actions 新增。\n"
+            "若在 Organization 層級新增，請確認「Repository access」有勾選此 Repo。\n"
         )
         logger.error(msg)
         sys.exit(1)
 
+    # ── 載入設定 ─────────────────────────────────────────
     bot_token = os.environ["TELEGRAM_BOT_TOKEN"]
     chat_id = os.environ["TELEGRAM_CHAT_ID"]
-    thread_id = os.environ.get("TELEGRAM_THREAD_ID")
     data_path = os.environ.get("DATA_PATH", "data/sent_deals.json")
 
+    # 話題設定：未來可依需求新增不同話題
+    thread_id_deal = os.environ.get("TELEGRAM_THREAD_ID_DEAL")  # 好康通知
+
+    # ── 啟動引擎 ─────────────────────────────────────────
     engine = Engine(
         sources=[EpicFreeSource()],
-        notifier=Notifier(bot_token=bot_token, chat_id=chat_id, thread_id=thread_id),
+        notifier=Notifier(
+            bot_token=bot_token,
+            chat_id=chat_id,
+            thread_id=thread_id_deal,
+        ),
         tracker=Tracker(json_path=data_path),
     )
 
