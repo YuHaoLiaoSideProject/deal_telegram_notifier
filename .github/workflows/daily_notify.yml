@@ -2,14 +2,12 @@ name: 每日福利好康通知
 
 on:
   schedule:
-    # 每天 UTC 02:00 = 台北時間 10:00
-    - cron: "0 2 * * *"
-  workflow_dispatch:  # 允許手動觸發
+    - cron: "0 2 * * *"   # 每天 UTC 02:00 = 台北 10:00
+  workflow_dispatch:
 
 jobs:
   notify:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
 
@@ -21,7 +19,7 @@ jobs:
       - name: 安裝相依套件
         run: pip install -r requirements.txt
 
-      - name: 執行通知
+      - name: 檢查 Secrets 並執行通知
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
