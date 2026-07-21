@@ -126,7 +126,7 @@ class TestEpicFreeSource:
     API_URL = (
         "https://store-site-backend-static.ak.epicgames.com/"
         "freeGamesPromotions"
-        "?locale=en-US&country=TW&allowCountries=TW"
+        "?locale=zh-TW&country=TW&allowCountries=TW"
     )
 
     def test_source_name(self):

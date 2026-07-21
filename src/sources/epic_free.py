@@ -14,7 +14,7 @@ from src.sources.base import (
 EPIC_API = (
     "https://store-site-backend-static.ak.epicgames.com/"
     "freeGamesPromotions"
-    "?locale=en-US&country=TW&allowCountries=TW"
+    "?locale=zh-TW&country=TW&allowCountries=TW"
 )
 EPIC_BASE = "https://store.epicgames.com"
 
