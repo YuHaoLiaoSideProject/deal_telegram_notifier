@@ -55,7 +55,12 @@ class Engine:
                 )
 
         if not all_deals:
-            logger.info("今日無新限免遊戲")
+            if fail_count and not success_count:
+                logger.error("所有資料來源皆無法取得，通知中斷")
+            elif fail_count:
+                logger.warning("部分來源失敗，成功來源無限免遊戲可通知")
+            else:
+                logger.info("今日無新限免遊戲")
             return
 
         # 去重：相同 source_id 只保留第一筆
