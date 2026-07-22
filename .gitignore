@@ -3,4 +3,5 @@ __pycache__/
 *.pyc
 .pytest_cache/
 .env
-data/
+# data/sent_deals.json is tracked for persistence across workflow runs
+# data/*.local.*

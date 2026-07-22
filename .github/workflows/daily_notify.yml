@@ -8,6 +8,8 @@ on:
 jobs:
   notify:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
@@ -28,3 +30,19 @@ jobs:
           # Variables（非敏感，Repo → Settings → Variables → Actions）
           TELEGRAM_THREAD_ID_DEAL: ${{ vars.TELEGRAM_THREAD_ID_DEAL }}
         run: python -m src.main
+
+      - name: 提交已通知記錄，確保持續性
+        run: |
+          if [ -f data/sent_deals.json ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add data/sent_deals.json
+            if git diff --cached --quiet; then
+              echo "無變更，跳過提交"
+            else
+              git commit -m "chore: 更新已通知記錄 [skip ci]"
+              git push
+            fi
+          else
+            echo "data/sent_deals.json 不存在，跳過提交"
+          fi
